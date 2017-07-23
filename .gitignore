@@ -1,0 +1,22 @@
+# general
+.DS_Store
+node_modules/
+dist/
+npm-debug.log
+yarn-error.log
+
+# structure
+*.swp
+
+# Editor directories and files
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# coverage tests
+coverage
+
+# this is a package
+yarn.lock
