@@ -27,38 +27,19 @@
                 i.fa.fa-archive
               | {{ index }}
 
-            .panel-block
-              button.button.is-primary.is-fullwidth(
-                @click="tonewkey",
-                :class="{'is-hidden': tog.newkey}",
-              ) New Listing
+            .panel-block(:class="{'is-hidden': tog.newkey}",key="button")
+                button.button.is-primary.is-fullwidth(@click="tonewkey") New Listing
+            .panel-block(:class="{'is-hidden': !tog.newkey}",key="input")
+                p.control.has-icons-left(v-on-clickaway="awaynewkey")
+                  input.input(
+                    type="text",
+                    ref="newkey",
+                    @keyup.enter="newkey($event.target.value)",
+                  )
+                  span.icon.is-small.is-left
+                    i.fa.fa-file-text
 
-              p.control.has-icons-left(
-                :class="{'is-hidden': !tog.newkey}",
-                v-on-clickaway="awaynewkey",
-              )
-                input.input(
-                  type="text",
-                  ref="newkey",
-                  @keyup.enter="newkey($event.target.value)",
-                )
-                span.icon.is-small.is-left
-                  i.fa.fa-file-text
-        .column
-          .block(v-if="active !== undefined")
-            | {{ copy[active] }}
-
-  .toasts
-    transition-group(name="toast-list",tag="ul")
-      article.message.toast-list-item(
-        v-for="toast, index of toasts.content",
-        :key="toast.id",
-        :class="toastType(toast.type)")
-        .message-header
-          p {{ toast.title}}
-          button.delete(@click="toastDelete(toast.id)")
-        .message-body {{ toast.body}} 
-
+  Toast(ref='Toast')
   footer.footer
     .container
       .content.has-text-right
@@ -70,56 +51,18 @@
 
 <script>
 import { mixin as clickaway } from 'vue-clickaway'
+import Toast from './components/Toast'
 export default {
 
   mixins: [ clickaway ],
+  components: { Toast },
 
   methods: {
-
-    toast (params) {
-      for (let key in this.toasts.defaults) {
-        if (params[key] === undefined) {
-          params[key] = this.toasts.defaults[key]
-        }
-      }
-
-      params.created = Date.now()
-      params.id = Math.random()
-      params.expire = setTimeout(() => { this.toastDelete(params.id) }, this.toasts.defaults.timeout * 1000)
-
-      this.toasts.content.push(params)
-    },
-
-    toastDelete (id) {
-      this.toasts.content.splice(this.toastIndex(id), 1)
-    },
-    toastIndex (id) {
-      for (let key in this.toasts.content) {
-        if (id === this.toasts.content[key].id) {
-          return key
-        }
-      }
-    },
-
-    toastType (type) {
-      switch (type) {
-        case 'error' :
-          return 'is-danger'
-        case 'success' :
-          return 'is-success'
-        case 'info' :
-          return 'is-info'
-      }
-    },
-
-    shuffle () {
-      this.toasts.content = window._.shuffle(this.toasts.content)
-    },
 
     newkey (value) {
 
       if (this.copy[value] !== undefined) {
-        this.toast({ type: 'error', title: 'Key exists', body: value, timeout: 1, })
+        this.$refs.Toast.add({ type: 'error', title: 'Key exists', body: value, timeout: 1, })
         return true
       }
 
@@ -141,6 +84,17 @@ export default {
         this.$refs.newkey.focus()
       }, 20)
     },
+
+    isObject (value) {
+      return (!(Array.isArray(value)) &&
+      !(value === null) &&
+      (typeof value === 'object'))
+    },
+    isArray (value) { return Array.isArray(value) },
+    isString (value) { return typeof value === 'string' },
+    isNumber (value) { return typeof value === 'number' },
+    isBoolean (value) { return typeof value === 'boolean' },
+    isNull (value) { return value === null },
 
     get (complete) {
       window.axios.get('http://localhost:3000/json')
@@ -167,10 +121,10 @@ export default {
 
       this.active = Object.keys(this.copy)[0]
 
-      this.toast({ title: 'title', body: 'this is a toast' })
-      this.toast({ title: 'error title', type: 'error', body: 'this is an error' })
-      this.toast({ title: 'succcess title', type: 'success', body: 'this is a success' })
-      this.toast({ title: 'info title', type: 'info', body: 'this is an info toast' })
+      this.$refs.Toast.add({ title: 'title', body: 'this is a toast' })
+      this.$refs.Toast.add({ title: 'error title', type: 'error', body: 'this is an error' })
+      this.$refs.Toast.add({ title: 'succcess title', type: 'success', body: 'this is a success' })
+      this.$refs.Toast.add({ title: 'info title', type: 'info', body: 'this is an info toast' })
 
     })
   },
@@ -182,45 +136,19 @@ export default {
       tog: {
         newkey: false,
         modal: false,
-      },
-      toasts: {
-        timeouts: undefined,
-        defaults: {
-          title: 'undefined title',
-          body: 'undefined body',
-          timeout: 5,
-        },
-        content: []
-      },
+      }
     }
   }
 }
+
 </script>
 
 <style lang="stylus">
+
+.panel-block
+  position relative
 .container
   max-width 960px
   width 960px
-
-.toasts
-  position absolute
-  top 40px
-  right 20px
-  z-index 10
-
-.toast-list-item
-  transition all 1s
-  width 240px
-
-
-.toast-list-enter, .toast-list-leave-to
-  opacity 0
-  transform translate(30px, 0)
-
-.toast-list-move
-  transition transform 1s
-
-.toast-list-leave-active
-  position absolute
 
 </style>
