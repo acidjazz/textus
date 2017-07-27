@@ -22,10 +22,9 @@
                   i.fa.fa-angle-down(aria-hidden="true")
             .dropdown-menu#dropdown-menu(role="menu")
               .dropdown-content
-                a.dropdown-item Array
-                a.dropdown-item Object
-                a.dropdown-item Element
-
+                a.dropdown-item.is-unselectable(@click="add('array')") Array
+                a.dropdown-item.is-unselectable(@click="add('object')") Object
+                a.dropdown-item.is-unselectable(@click="add('element')") Element
 
         .level-item
           a.button(@click="toggle()")
@@ -53,7 +52,7 @@
         a.button
           span.icon.is-small.has-text-danger
             i.fa.fa-trash
-  .node(v-if="isNumber(value)") {{ number }} number
+  // .node(v-if="isNumber(value)") {{ number }} number
 </template>
 
 <style lang="stylus">
@@ -61,7 +60,7 @@
   > .node
     padding-bottom 0.75rem
     &.node_array
-      padding 0 0 0 10px
+      padding-left 10px
       border-left 2px solid rgb(222,226,229)
   textarea
     border-radius 0.4em 0 0.4em 0.4em
@@ -86,6 +85,17 @@ export default {
 
   methods: {
 
+
+    add (type) {
+      switch (type) {
+        case 'element' :
+          console.log(type)
+          this.value.push('hello there')
+          break
+
+      }
+    },
+
     toggle () {
 
       this.hidden = !this.hidden
@@ -109,10 +119,10 @@ export default {
   },
 
   watch: {
-    value: (value) =>  {
+    value: function (value) {
       this.internal = value
     },
-    internal: (value) => {
+    internal: function (value) {
       this.$emit('input', value)
     },
   },

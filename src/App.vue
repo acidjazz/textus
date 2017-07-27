@@ -31,9 +31,9 @@
                 i.fa.fa-archive
               | {{ index }}
 
-            .panel-block(:class="{'is-hidden': tog.newkey}",key="button")
+            .panel-block(:class="{'is-hidden': tog.newkey}")
                 button.button.is-primary.is-fullwidth(@click="tonewkey") New Listing
-            .panel-block(:class="{'is-hidden': !tog.newkey}",key="input")
+            .panel-block(:class="{'is-hidden': !tog.newkey}")
                 p.control.has-icons-left(v-on-clickaway="awaynewkey")
                   input.input(
                     type="text",
@@ -42,9 +42,12 @@
                   )
                   span.icon.is-small.is-left
                     i.fa.fa-file-text
+            .panel-block
+                button.button.is-success.is-fullwidth(@click="save") Save
 
         .column
-          Node(v-model="copy[active]",:name="active",:startHidden="false",v-if="copy[active] !== 'loading'")
+          // Node(v-model="copy[active]",:startHidden="false")
+          JForm(v-model="copy")
 
   Toast(ref='Toast')
   footer.footer
@@ -59,11 +62,12 @@
 <script>
 import { mixin as clickaway } from 'vue-clickaway'
 import Toast from './components/Toast'
-import Node from './components/Node'
+import JForm from './components/JForm'
+// import Node from './components/Node'
 export default {
 
   mixins: [ clickaway ],
-  components: { Toast, Node },
+  components: { Toast, JForm },
 
   methods: {
 
@@ -97,16 +101,17 @@ export default {
       }, 20)
     },
 
-
     get (complete) {
       window.axios.get('http://localhost:3000/json')
       .then(response => {
-        this.copy = response.data
+        // this.copy = response.data
         complete()
       })
     },
 
     save (complete) {
+      console.log(JSON.stringify(this.copy))
+      /*
       window.axios.post('http://localhost:3000/json', this.copy)
       .then(response => {
         this.copy = response.data
@@ -114,6 +119,7 @@ export default {
           complete()
         }
       })
+      */
     },
 
   },
@@ -123,10 +129,21 @@ export default {
       this.active = Object.keys(this.copy)[0]
     })
   },
-
   data () {
     return {
-      copy: { this: 'loading' },
+      // copy: { this: 'loading' },
+      copy: {
+        aString: { string: 'this is a string' },
+        aNumber: { number: 99 },
+        aNumberArray: { numberArray: [ 1, 2, 3 ] },
+        aStringArray: { stringArray: [ 'a', 'b', 'c' ] },
+        anObject: {
+          aStringInObj: 'this is a string in an Object',
+          aNumberInObj: 0,
+        },
+        aNull: null,
+      },
+
       active: 'this',
       name: 'what',
       tog: {
