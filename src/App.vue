@@ -46,8 +46,8 @@
                 button.button.is-success.is-fullwidth(@click="save") Save
 
         .column
-          // Node(v-model="copy[active]",:startHidden="false")
-          JForm(v-model="copy")
+          Node(v-model="copy",:startHidden="false")
+          // JForm(v-model="copy")
 
   Toast(ref='Toast')
   footer.footer
@@ -62,12 +62,12 @@
 <script>
 import { mixin as clickaway } from 'vue-clickaway'
 import Toast from './components/Toast'
-import JForm from './components/JForm'
-// import Node from './components/Node'
+// import JForm from './components/JForm'
+import Node from './components/Node'
 export default {
 
   mixins: [ clickaway ],
-  components: { Toast, JForm },
+  components: { Toast, Node },
 
   methods: {
 
