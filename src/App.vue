@@ -22,7 +22,11 @@
                 input.input.is-small(type="text",placeholder="Search")
                 span.icon.is-small.is-left
                   i.fa.fa-search
-            a.panel-block(v-for="data, index of copy")
+            a.panel-block(
+              v-for="data, index of copy",
+              @click="activate(index)",
+              :class="{'is-active': active === index}",
+            )
               span.panel-icon
                 i.fa.fa-archive
               | {{ index }}
@@ -39,6 +43,9 @@
                   span.icon.is-small.is-left
                     i.fa.fa-file-text
 
+        .column
+          Node(v-model="copy[active]",:name="active",:startHidden="false",v-if="copy[active] !== 'loading'")
+
   Toast(ref='Toast')
   footer.footer
     .container
@@ -52,12 +59,17 @@
 <script>
 import { mixin as clickaway } from 'vue-clickaway'
 import Toast from './components/Toast'
+import Node from './components/Node'
 export default {
 
   mixins: [ clickaway ],
-  components: { Toast },
+  components: { Toast, Node },
 
   methods: {
+
+    activate (index) {
+      this.active = index
+    },
 
     newkey (value) {
 
@@ -66,7 +78,7 @@ export default {
         return true
       }
 
-      this.copy[value] = {}
+      this.copy[value] = []
       this.$refs.newkey.value = ''
       this.tog.newkey = false
       this.save()
@@ -85,16 +97,6 @@ export default {
       }, 20)
     },
 
-    isObject (value) {
-      return (!(Array.isArray(value)) &&
-      !(value === null) &&
-      (typeof value === 'object'))
-    },
-    isArray (value) { return Array.isArray(value) },
-    isString (value) { return typeof value === 'string' },
-    isNumber (value) { return typeof value === 'number' },
-    isBoolean (value) { return typeof value === 'boolean' },
-    isNull (value) { return value === null },
 
     get (complete) {
       window.axios.get('http://localhost:3000/json')
@@ -116,23 +118,17 @@ export default {
 
   },
 
-  created () {
+  mounted () {
     this.get(() => {
-
       this.active = Object.keys(this.copy)[0]
-
-      this.$refs.Toast.add({ title: 'title', body: 'this is a toast' })
-      this.$refs.Toast.add({ title: 'error title', type: 'error', body: 'this is an error' })
-      this.$refs.Toast.add({ title: 'succcess title', type: 'success', body: 'this is a success' })
-      this.$refs.Toast.add({ title: 'info title', type: 'info', body: 'this is an info toast' })
-
     })
   },
 
   data () {
     return {
-      copy: undefined,
-      active: undefined,
+      copy: { this: 'loading' },
+      active: 'this',
+      name: 'what',
       tog: {
         newkey: false,
         modal: false,
@@ -144,11 +140,10 @@ export default {
 </script>
 
 <style lang="stylus">
-
 .panel-block
   position relative
 .container
   max-width 960px
   width 960px
-
 </style>
+
