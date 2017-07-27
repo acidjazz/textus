@@ -46,7 +46,7 @@
                 button.button.is-success.is-fullwidth(@click="save") Save
 
         .column
-          Node(v-model="copy",:startHidden="false")
+          Node(v-model="copy[active]",:startHidden="false",v-if="copy[active] !== 'loading'")
           // JForm(v-model="copy")
 
   Toast(ref='Toast')
@@ -104,22 +104,21 @@ export default {
     get (complete) {
       window.axios.get('http://localhost:3000/json')
       .then(response => {
-        // this.copy = response.data
+        this.copy = response.data
         complete()
       })
     },
 
     save (complete) {
       console.log(JSON.stringify(this.copy))
-      /*
       window.axios.post('http://localhost:3000/json', this.copy)
       .then(response => {
         this.copy = response.data
-        if (complete !== undefined) {
+        this.$refs.Toast.add({ type: 'success', title: 'Save', body: 'Content saved' })
+        if (typeof complete === "function") {
           complete()
         }
       })
-      */
     },
 
   },
@@ -131,19 +130,7 @@ export default {
   },
   data () {
     return {
-      // copy: { this: 'loading' },
-      copy: {
-        aString: { string: 'this is a string' },
-        aNumber: { number: 99 },
-        aNumberArray: { numberArray: [ 1, 2, 3 ] },
-        aStringArray: { stringArray: [ 'a', 'b', 'c' ] },
-        anObject: {
-          aStringInObj: 'this is a string in an Object',
-          aNumberInObj: 0,
-        },
-        aNull: null,
-      },
-
+      copy: { this: 'loading' },
       active: 'this',
       name: 'what',
       tog: {

@@ -6,8 +6,7 @@
         .level-item
           .subtitle.is-5
             strong {{ value.length }} 
-        .level-item
-            input.input(type="text",v-model="name")
+        .level-item {{ name }}
         .level-item
           span.tag Array
       .level-right
@@ -31,20 +30,20 @@
             span.icon.is-small
               i.fa(:class="{'fa-expand': hidden, 'fa-compress': !hidden}")
     .content(:class="{ 'is-hidden': hidden }")
-      Node(v-model="item",:name="index",:key="index",v-for="item, index in value")
+      Node(v-model="internal[index]",:name="index",:key="index",v-for="item, index in value")
   .node(v-if="isObject(internal)")
-    Node(v-model="item",:name="index",:key="index",v-for="item, index in value")
+    Node(v-model="internal[index]",:name="index",:key="index",v-for="item, index in value")
   .node(v-if="isString(internal) && isString(name)")
     .field.has-addons
       p.control
-        input.input(type="text",v-model="name")
+        input.input(type="text",v-model="iname")
       p.control.is-expanded
         input.input(type="text",v-model="internal")
       p.control
         a.button
           span.icon.is-small.has-text-danger
             i.fa.fa-trash
-  .node(v-if="isString(internal) && isNumber(name)")
+  .node(v-if="(isString(internal) || isNumber(internal)) && isNumber(name)")
     .field.has-addons
       p.control.is-expanded
         textarea.textarea(type="text",v-model="internal",rows="1")
@@ -119,6 +118,9 @@ export default {
   },
 
   watch: {
+    name: function (name) {
+      this.iname = name
+    },
     value: function (value) {
       this.internal = value
     },
@@ -136,6 +138,7 @@ export default {
     return {
       hidden: true,
       internal: this.value,
+      iname: this.name,
     }
   },
 
